@@ -1,0 +1,214 @@
+.product__media-image {
+  width: 100%;
+  max-height: 220px;
+  object-fit: cover;
+}
+
+.card--card .card-information {
+  padding: 27px 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.card-heading {
+  padding: 0;
+  margin: 0;
+  font-size: 13px;
+  font-weight: 400;
+  letter-spacing: 1px;
+}
+
+.card-heading a {
+  text-decoration: none;
+  color: rgb(var(--color-foreground));
+}
+
+.product-card:hover .card-heading {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.product-card-child {
+  display: block;
+  width: 100%;
+  height: 100%;
+  text-decoration: none;
+  position: relative;
+  z-index: 1;
+}
+
+.card-vendor {
+  margin-top: 7px;
+  color: rgb(var(--color-foreground));
+  opacity: 0.7;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.product-color-swatches {
+  display: flex;
+  align-items: center;
+  justify-content: var(--product-card-text-alignment);
+  margin-top: 10px;
+}
+
+.color-swatches {
+  display: flex;
+  gap: 5px;
+  margin: 8px 0;
+}
+
+.color-swatch {
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  border: 1px solid #ddd;
+  cursor: pointer;
+  transition: border 0.2s ease;
+  margin-right: 5px;
+  overflow: hidden;
+}
+
+.color-swatch img {
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.color-swatch.selected {
+  border: 1px solid #000;
+}
+
+.color-swatch:hover {
+  border-color: #000;
+}
+
+.color-swatch:last-child {
+  margin-right: 0px;
+}
+
+.swatch-disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  text-decoration: line-through;
+}
+
+.card-pricing {
+  margin-top: 10px;
+}
+
+.card--standard .card-information {
+  padding-top: 17px;
+  padding-bottom: 17px;
+}
+
+.card--standard .price--on-sale .price__sale {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.product-card {
+  position: relative;
+  text-align: var(--product-card-text-alignment);
+}
+
+.product-card.card--card {
+  border: var(--product-card-border-width) solid rgba(var(--color-foreground), var(--product-card-border-opacity));
+  border-radius: calc(var(--product-card-corner-radius) - 5px);
+}
+
+.product-card.card--card:after,
+.product-card.card--standard .card-media:after {
+  content: '';
+  position: absolute;
+  width: calc(var(--product-card-border-width) * 2 + 100%);
+  height: calc(var(--product-card-border-width) * 2 + 100%);
+  top: calc(var(--product-card-border-width) * -1);
+  left: calc(var(--product-card-border-width) * -1);
+  border-radius: calc(var(--product-card-corner-radius) - 5px);
+  box-shadow: var(--product-card-shadow-horizontal-offset) var(--product-card-shadow-vertical-offset) var(--product-card-shadow-blur-radius)
+    rgba(var(--color-shadow), var(--product-card-shadow-opacity));
+}
+
+.product-card.card--card .card-media {
+  overflow: hidden;
+}
+
+.card-media {
+  display: flex;
+  position: relative;
+  align-items: stretch;
+  width: calc(100% - 2 * var(--product-card-image-padding));
+  margin: var(--product-card-image-padding);
+  border-radius: calc(var(--product-card-corner-radius) - var(--product-card-border-width) - 5px);
+}
+
+.product-card.card--standard .card-media-child {
+  border-radius: calc(var(--product-card-corner-radius) - var(--product-card-border-width) - 5px);
+}
+
+.card-media {
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+.product-card.card--standard .card-media {
+  border: var(--product-card-border-width) solid rgba(var(--color-foreground), var(--product-card-border-opacity));
+  border-radius: calc(var(--product-card-corner-radius) - 5px);
+  box-sizing: border-box;
+}
+
+.card-media:before {
+  content: '';
+  width: 0;
+  height: 0;
+  padding-bottom: var(--media-ratio);
+}
+
+.card-media-child {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  overflow: hidden;
+  width: 100%;
+  z-index: 1;
+}
+
+.card-media-child img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center center;
+}
+
+.product-card .card-media img {
+  transition: transform 0.5s ease;
+}
+
+.product-card:hover .card-media img {
+  transform: scale(1.03);
+}
+
+.card-badge-wrapper {
+  display: flex;
+  width: 100%;
+  padding: 12px 10px;
+}
+
+.card__badge {
+  z-index: 1;
+}
+
+.card-badge-wrapper.right {
+  justify-content: flex-end;
+}
+
+.card__badge.top {
+  align-self: flex-start;
+}
+
+.card__badge.bottom {
+  align-self: flex-end;
+}

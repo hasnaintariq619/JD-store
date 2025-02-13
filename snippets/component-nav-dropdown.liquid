@@ -1,0 +1,109 @@
+{% unless nav_style == 'drawer' %}
+  <style>
+    #main-header .nav-dropdown,
+    #main-header .nav-dropdown_child {
+      position: absolute;
+      top: 100%;
+      gap: 0;
+      align-items: stretch;
+      flex-direction: column;
+      margin-top: 1px;
+      overflow: hidden;
+    }
+    #main-header .nav-dropdown_child {
+      position: static;
+    }
+    #main-header .nav-dropdown a,
+    #main-header .nav-dropdown .menu-toggle {
+      display: flex;
+      min-width: 20ch;
+      width: 100%;
+      font-size: 15px;
+      line-height: 1.5;
+      padding: 12px 18px;
+      border-bottom: 1px solid rgb(var(--color-foreground), 0.2);
+    }
+  </style>
+{% endunless %}
+<ul
+  {% if nav_style == 'drawer' %}
+    class="menu-drawer_navigation"
+  {% endif %}
+>
+  {% for link in section.settings.menu.links %}
+    <li x-data="{ menuOpen: false, activeSubMenu: null }" @click.outside="menuOpen = false; activeSubMenu = null">
+      {% if link.links != blank %}
+        <button
+          @click="menuOpen = !menuOpen"
+          :class="{ 'menu-open': menuOpen }"
+          class="menu-toggle"
+        >
+          {{- link.title | escape -}}
+          {{- 'icon-caret.svg' | inline_asset_content -}}
+        </button>
+        <ul
+          x-show="menuOpen"
+          class="nav-{{ nav_style }} color-{{ section.settings.menu_color_scheme }} gradient"
+          x-transition
+          role="list"
+          x-cloak
+        >
+          {%- for childlink in link.links -%}
+            <li>
+              {% if childlink.links == blank %}
+                <a
+                  href="{{ childlink.url }}"
+                  class="header__menu-item"
+                  {% if childlink.current %}
+                    aria-current="page"
+                  {% endif %}
+                >
+                  {{ childlink.title | escape }}
+                </a>
+              {% else %}
+                <button
+                  @click="activeSubMenu = (activeSubMenu === '{{ childlink.title | escape }}' ? null : '{{ childlink.title | escape }}')"
+                  :class="{ 'menu-open': activeSubMenu === '{{ childlink.title | escape }}' }"
+                  class="menu-toggle"
+                >
+                  {{- childlink.title | escape -}}
+                  {{- 'icon-caret.svg' | inline_asset_content -}}
+                </button>
+                <ul
+                  x-show="activeSubMenu === '{{ childlink.title | escape }}'"
+                  class="nav-dropdown_child"
+                  x-transition
+                  role="list"
+                  x-cloak
+                >
+                  {%- for grandchildlink in childlink.links -%}
+                    <li>
+                      <a
+                        href="{{ grandchildlink.url }}"
+                        class="header__menu-item"
+                        {% if grandchildlink.current %}
+                          aria-current="page"
+                        {% endif %}
+                      >
+                        {{ grandchildlink.title | escape }}
+                      </a>
+                    </li>
+                  {%- endfor -%}
+                </ul>
+              {% endif %}
+            </li>
+          {%- endfor -%}
+        </ul>
+      {% else %}
+        <a
+          href="{{ link.url }}"
+          {% if link.current %}
+            aria-current="page"
+          {% endif %}
+        >
+          {{- link.title | escape -}}
+        </a>
+      {% endif %}
+    </li>
+  {% endfor %}
+</ul>

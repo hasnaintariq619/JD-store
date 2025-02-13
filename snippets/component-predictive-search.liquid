@@ -1,0 +1,40 @@
+<predictive-search>
+  <form action="{{ routes.search_url }}" method="get" role="search">
+    <input
+      type="search"
+      name="q"
+      value="{{ search.terms | escape }}"
+      aria-owns="predictive-search-results"
+      aria-controls="predictive-search-results"
+      aria-haspopup="listbox"
+      aria-autocomplete="list"
+      placeholder="Search"
+      x-model="searchTerm"
+      x-ref="searchInput"
+      x-show="searchOpen"
+      @focus="$event.target.select()"
+    >
+    <input name="options[prefix]" type="hidden" value="last">
+
+    <button
+      type="reset"
+      class="reset__button"
+      aria-label="Clear search term"
+      @click="$refs.searchInput.value = ''; searchTerm = ''; $dispatch('search-input-cleared');"
+      x-show="searchTerm.length > 0"
+      x-transition
+      x-cloak
+    >
+      {{- 'icon-close.svg' | inline_asset_content -}}
+    </button>
+    <button aria-label="Search">
+      {{- 'icon-search.svg' | inline_asset_content -}}
+    </button>
+  </form>
+  <div id="predictive-search-wrapper" tabindex="-1">
+    <div class="predictive-search__loading hidden">
+      {{ 'icon-loader.svg' | inline_asset_content }}
+    </div>
+    <div id="predictive-search"></div>
+  </div>
+</predictive-search>

@@ -1,0 +1,70 @@
+<form id="filters-form" class="filters-horizontal small-hide">
+  <h2 class="facets__heading">Filter:</h2>
+  {%- for f in results.filters -%}
+    <div
+      class="facets__wrapper"
+      x-data="{ open: false }"
+    >
+      <button type="button" x-on:click="open = !open" class="filter-button">
+        {{ f.label | escape }}
+        {{ 'icon-caret.svg' | inline_asset_content }}
+      </button>
+      <div
+        x-cloak
+        x-show="open"
+        @click.away="open = false"
+        x-transition
+        class="filter-content js-filter"
+        id="Details-{{ f.param_name | escape }}-{{ section.id }}"
+      >
+        <div class="facets__head-wrapper">
+          <span class="facet-name">
+            {{ f.label }}
+            {% if f.active_values.size > 0 %}
+              ({{ f.active_values.size }})
+            {% endif %}
+          </span>
+          {% if f.active_values.size > 0 %}
+            <a
+              class="facet-reset"
+              data-render-section-url="{{ f.url_to_remove }}"
+              href="{{ f.url_to_remove }}"
+              >reset
+            </a>
+          {% endif %}
+        </div>
+        <ul class="facets__list">
+          {% if f.type == 'price_range' %}
+            {% render 'component-filters-price-range', filter: f, id_prefix: 'Filter-', filter_type: filter_type %}
+          {% else %}
+          {%- for v in f.values -%}
+            {% assign input_id = 'Filter-' | append: f.param_name | escape | append: '-' | append: forloop.index %}
+            <li class="facets__item">
+              <label class="facet-checkbox">
+                <input
+                  type="checkbox"
+                  id="{{ input_id }}"
+                  name="{{ v.param_name }}"
+                  value="{{ v.value }}"
+                  data-render-section="filters-form"
+                  {% if v.active %}
+                    checked
+                  {% endif -%}
+                  {% if v.count == 0 and v.active == false %}
+                    disabled
+                  {% endif -%}
+                >
+                {{- 'icon-square.svg' | inline_asset_content -}}
+                <div class="svg-wrapper">
+                  {{- 'icon-checkmark.svg' | inline_asset_content -}}
+                </div>
+                {{- v.label }} ({{ v.count }})</label
+              >
+            </li>
+          {%- endfor -%}
+        {% endif %}
+        </ul>
+      </div>
+    </div>
+  {% endfor %}
+</form>

@@ -1,0 +1,91 @@
+{% assign show_more_number = 10 %}
+<aside class="filters-sidebar small-hide">
+  {% liquid
+    assign open = true
+    if collapse_filters
+      assign open = false
+    endif
+  %}
+
+  <div class="facets__main-head-wrapper">
+    <h2 class="facets__heading">Filter:</h2>
+  </div>
+  <form id="filters-form">
+    {% for f in results.filters %}
+      <div
+        class="filter-section facets__disclosure-vertical js-filter"
+        id="Details-{{ f.param_name | escape }}-{{ section.id }}"
+        x-data="{ open: {{ open }} }"
+      >
+        <details
+          x-bind:open="open"
+          @toggle="open = $event.target.open"
+        >
+          <summary>
+            <span>
+              {{ f.label }}
+              {% if f.active_values.size > 0 %}
+                ({{ f.active_values.size }})
+                <a
+                  class="reset-button"
+                  data-render-section-url="{{ f.url_to_remove }}"
+                  href="{{ f.url_to_remove }}"
+                  >reset
+                </a>
+              {% endif %}
+            </span>
+            {{ 'icon-caret.svg' | inline_asset_content }}
+          </summary>
+          <div
+            class="facets__display-vertical"
+            x-data="{ showMore : $persist(false).as('sm-{{ f.param_name }}') }"
+          >
+            {% if f.type == 'price_range' %}
+              {% render 'component-filters-price-range', filter: f, id_prefix: 'Filter-', filter_type: filter_type %}
+            {% else %}
+              {% for v in f.values %}
+                {% assign input_id = 'Filter-' | append: f.param_name | escape | append: '-' | append: forloop.index %}
+                <label
+                  class="facet-checkbox"
+                  {% if forloop.index > show_more_number %}
+                    x-show="showMore"
+                    x-transition
+                  {% endif %}
+                >
+                  <input
+                    id="{{ input_id }}"
+                    type="checkbox"
+                    name="{{ v.param_name }}"
+                    value="{{ v.value }}"
+                    data-render-section="filters-form"
+                    {% if v.active %}
+                      checked
+                    {% endif -%}
+                    {% if v.count == 0 and v.active == false %}
+                      disabled
+                    {% endif -%}
+                  >
+                  {{- 'icon-square.svg' | inline_asset_content -}}
+                  <div class="svg-wrapper">
+                    {{- 'icon-checkmark.svg' | inline_asset_content -}}
+                  </div>
+                  {{- v.label }} ({{ v.count }})
+                </label>
+              {% endfor %}
+            {% endif %}
+            {%- if f.type != 'price_range' and f.values.size > show_more_number -%}
+              <button
+                type="button"
+                class="filters__show-more"
+                x-on:click="showMore = !showMore"
+                x-text="showMore ? 'Show less' : 'Show more'"
+              >
+                Show more
+              </button>
+            {%- endif %}
+          </div>
+        </details>
+      </div>
+    {% endfor %}
+  </form>
+</aside>
