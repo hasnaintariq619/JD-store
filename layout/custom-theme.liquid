@@ -36,6 +36,12 @@
 
     {{ content_for_header }}
 
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap"
+      rel="stylesheet"
+    >
     <script src="{{ 'alpinejs-persist@3.14.8.min.js' | asset_url }}" defer="defer"></script>
     <script src="{{ 'alpinejs@3.14.8.min.js' | asset_url }}" defer="defer"></script>
 
@@ -49,30 +55,17 @@
     </script>
 
     {% comment %} Theme Styles {% endcomment %}
-
-    {%- render 'css-variables' -%}
-    {{ 'base.css' | asset_url | stylesheet_tag }}
     {%- if settings.predictive_search_enabled -%}
       {{ 'component-predictive-search.css' | asset_url | stylesheet_tag }}
     {%- endif -%}
-
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-      href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap"
-      rel="stylesheet"
-    >
-    {{ 'theme.css' | asset_url | stylesheet_tag }}
   </head>
 
   <body>
-    {% section 'header' %}
+    {% section 'custom-header' %}
 
     <main id="MainContent" role="main" tabindex="-1">
       {{ content_for_layout }}
     </main>
-
-    {% section 'main-footer' %}
 
     {%- if settings.predictive_search_enabled -%}
       <script src="{{ 'component-predictive-search.js' | asset_url }}" defer="defer"></script>

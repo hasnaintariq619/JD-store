@@ -4,6 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "prepare:push": "concurrently  -c \"auto\" \"npm:dev:*\"",
+    "dev:shopify": "shopify theme dev -s Hasnain-JDrebuild",
+    "dev:tailwind": "npx @tailwindcss/cli -i ./src/index.css -o ./assets/theme.css --watch",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -13,6 +16,9 @@
     "@shopify/eslint-plugin": "^42.1.0",
     "@shopify/prettier-plugin-liquid": "^1.5.2",
     "eslint": "^8.45.0",
-    "prettier": "^3.3.3"
+    "prettier": "^3.3.3",
+    "concurrently": "^9.1.2",
+    "postcss": "^8.4.12",
+    "tailwindcss": "^4.0.6"
   }
 }

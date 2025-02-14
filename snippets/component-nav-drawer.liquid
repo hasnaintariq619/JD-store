@@ -1,16 +1,19 @@
 <style>
   #menu-drawer {
-    position: absolute;
-    top: calc(100% + 1px);
+    position: fixed;
+    top: 0;
     left: 0;
+    bottom: 0;
     width: min(500px, 100%);
     height: calc(100vh - var(--header-height));
     transform: translateX(-100%);
-    z-index: -1;
+    z-index: 9999;
     transition: 300ms ease;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    backdrop-filter: blur(20px);
+    background: #000000bd;
   }
   #header-drawer #menu-drawer.drawer-open {
     transform: translateX(0);
@@ -83,9 +86,12 @@
     :class="{ 'drawer-open': drawerOpen }"
   >
     {{- 'icon-menu.svg' | inline_asset_content -}}
-    {{- 'icon-close.svg' | inline_asset_content -}}
   </button>
-  <div id="menu-drawer" class="color-{{ section.settings.menu_color_scheme }} gradient" :class="{ 'drawer-open': drawerOpen }">
+  <div
+    id="menu-drawer"
+    class="color-{{ section.settings.menu_color_scheme }} gradient text-white"
+    :class="{ 'drawer-open': drawerOpen }"
+  >
     {% render 'component-nav-dropdown', nav_style: 'drawer' %}
 
     <div class="menu-drawer_action">
@@ -96,12 +102,6 @@
             enable_language_selector: section.settings.enable_language_selector
           -%}
         </div>
-      {% endif %}
-
-      {% if shop.customer_accounts_enabled and section.settings.enable_customer_avatar %}
-        <a href="{% if customer %}{{ routes.account_url }}{% else %}{{ routes.account_login_url }}{% endif %}" rel="nofollow">
-          {{ 'icon-account.svg' | inline_asset_content }}
-        </a>
       {% endif %}
     </div>
   </div>

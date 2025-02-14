@@ -1,37 +1,57 @@
 <predictive-search>
-  <form action="{{ routes.search_url }}" method="get" role="search">
+  <!-- Desktop Search Form -->
+  <form action="{{ routes.search_url }}" method="get" role="search" class="hidden md:!flex items-center !border-none">
     <input
       type="search"
       name="q"
       value="{{ search.terms | escape }}"
+      placeholder="Search Cloths, brand, shoes ...."
       aria-owns="predictive-search-results"
       aria-controls="predictive-search-results"
       aria-haspopup="listbox"
       aria-autocomplete="list"
-      placeholder="Search"
       x-model="searchTerm"
-      x-ref="searchInput"
-      x-show="searchOpen"
-      @focus="$event.target.select()"
+      id="header-actions_search"
+      class="bg-white px-4 h-[40px] text-[13px] p-2 min-w-120 outline-none !text-black"
+      @click="searchOpenDesktop = true;"
+      style="outline-offset:0 !important; box-shadow:none !important;"
     >
-    <input name="options[prefix]" type="hidden" value="last">
-
-    <button
-      type="reset"
-      class="reset__button"
-      aria-label="Clear search term"
-      @click="$refs.searchInput.value = ''; searchTerm = ''; $dispatch('search-input-cleared');"
-      x-show="searchTerm.length > 0"
-      x-transition
-      x-cloak
-    >
-      {{- 'icon-close.svg' | inline_asset_content -}}
-    </button>
-    <button aria-label="Search">
-      {{- 'icon-search.svg' | inline_asset_content -}}
+    <button type="submit" class="bg-[#ffee00] text-black hover:bg-black hover:text-[#ffee00] px-6 py-3 uppercase font-bold text-[13px]">
+      Search
     </button>
   </form>
-  <div id="predictive-search-wrapper" tabindex="-1">
+
+  <!-- Mobile Search Form -->
+  <form action="{{ routes.search_url }}" method="get" role="search" class="block md:hidden !border-none">
+    <div class="flex items-center justify-center bg-white rounded-full px-4">
+      <button aria-label="Search" class="black">
+        {{- 'icon-search.svg' | inline_asset_content -}}
+      </button>
+      <input
+        type="search"
+        name="q"
+        value="{{ search.terms | escape }}"
+        placeholder="Search"
+        aria-owns="predictive-search-results"
+        aria-controls="predictive-search-results"
+        aria-haspopup="listbox"
+        aria-autocomplete="list"
+        x-model="searchTerm"
+        x-ref="searchInput"
+        x-show="searchOpen"
+        @focus="$event.target.select()"
+        class="!text-black px-2 outline-none"
+        style="outline-offset: 0 !important; box-shadow: none !important;"
+      >
+      <input name="options[prefix]" type="hidden" value="last">
+      <button class="rounded-full bg-gray-400 p-3 text-sm" aria-label="Search">
+        {% render 'chevron-right-icon' %}
+      </button>
+    </div>
+  </form>
+
+  <!-- Predictive Search Results -->
+  <div id="predictive-search-wrapper" tabindex="-1" x-show="searchOpenDesktop || searchOpen">
     <div class="predictive-search__loading hidden">
       {{ 'icon-loader.svg' | inline_asset_content }}
     </div>

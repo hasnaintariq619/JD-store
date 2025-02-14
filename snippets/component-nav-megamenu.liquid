@@ -28,7 +28,7 @@
     line-height: 1.5;
   }
 </style>
-<ul>
+<ul class="flex backdrop-blur-lg">
   {% for link in section.settings.menu.links %}
     <li x-data="{ menuOpen: false }" @click.outside="menuOpen = false">
       {% if link.links != blank %}

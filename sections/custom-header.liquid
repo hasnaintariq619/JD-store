@@ -1,0 +1,93 @@
+<header
+  id="main-header"
+  x-data="{ searchOpen: false, searchTerm: '' }"
+  @click.outside="searchOpen = false"
+  @input="searchTerm = $event.target.value"
+  class="px-2 bg-black"
+>
+  {% render 'component-nav-drawer' %}
+
+  <div class="hidden max-w-7xl mx-auto my-0 md:flex justify-end gap-4 text-white px-2 py-1 text-[13px] items-center">
+    <a href="{{routes.order_tracking_url}}" class="cursor-pointer hover:underline">Order Tracking</a>
+    <a href="{{ routes.contact_url }}" class="cursor-pointer hover:underline">Contact Us</a>
+    <div class="text-white text-[13px]">
+      <a href="#" class="cursor-pointer hover:underline {%  if shop.locale == 'en' %} font-bold {% else %} font-normal {% endif %}">EN</a> /
+      <a href="#" class="cursor-pointer hover:underline {%  if shop.locale == 'fn' %} font-bold {% else %} font-normal {% endif %}">FN</a>
+    </div>
+  </div>
+
+  {% comment %} mobile screen {% endcomment %}
+  <div class="flex justify-between items-center px-2 py-1 md:hidden">
+    <div class="flex justify-center items-center gap-2">
+      <button
+        type="button"
+        class="p-2 inline-flex items-center justify-center focus:outline-none text-color"
+      >
+        {% render 'menu-icon', class: 'text-white' %}
+      </button>
+      <button
+        type="button"
+        class="p-2 inline-flex items-center justify-center focus:outline-none text-color"
+      >
+        {% render 'search-icon', class: 'text-white' %}
+      </button>
+    </div>
+
+    <div class="block">
+      {% render 'jd-logo-sm', class: 'text-white max-h-[55px]' %}
+    </div>
+
+    <div class="flex justify-center items-center gap-2">
+      <button
+        type="button"
+        class="p-2 inline-flex items-center justify-center focus:outline-none text-color"
+      >
+        {% render 'user-icon', class: 'text-white' %}
+      </button>
+      <button
+        type="button"
+        class="p-2 inline-flex items-center justify-center focus:outline-none text-color"
+      >
+        {% render 'basket-icon', class: 'text-white' %}
+      </button>
+    </div>
+  </div>
+  {% comment %} bigger devices {% endcomment %}
+  <div class="hidden max-w-7xl mx-auto my-0 md:flex justify-between items-center px-2 py-1">
+    {% render 'jd-logo', class: 'text-white max-h-[55px]' %}
+    <div class="flex gap-2">
+      <form action="{{ routes.search_url }}" method="get" class="relative flex">
+        <input
+          type="search"
+          class="bg-white text-gray-500 text-sm px-6 py-2 h-full w-100 focus:outline-none focus:outline-offset-0"
+          placeholder="Search Nike, adidas, latest footwear"
+        >
+        <button class="bg-[#ffee00] text-black uppercase text-[13px] font-bold px-4 py-1 h-full hover:bg-black hover:text-[#ffee00]">
+          Search
+        </button>
+
+        {% comment %} search box {% endcomment %}
+        <div class="" id="search-container"></div>
+      </form>
+      <button class="bg-white text-black px-4 py-2 flex gap-2 items-center justify-center">
+        {% render 'user-icon' %}
+        <span class="hidden lg:block text-[13px]"> My Account </span>
+      </button>
+      <button class="bg-white text-black px-4 py-2 flex gap-2 items-center justify-center">
+        {% render 'heart-icon' %}
+        <span class="hidden lg:block text-[13px]"> Favorite </span>
+      </button>
+      <button class="bg-white text-black px-4 py-2 flex gap-2 items-center justify-center">
+        {% render 'basket-icon' %}
+        <span class="hidden lg:block text-[13px]"> Basket </span>
+      </button>
+    </div>
+  </div>
+</header>
+<nav class="hidden md:block bg-black">
+  <ul class="max-w-7xl mx-auto my-0 flex gap-2 justify-between items-center p-2 px-4">
+    {% for link in linklists['main-menu'].links %}
+      <li class="bg-black text-white font-bold text-[13px] px-0 py-2">{{ link.title }}</li>
+    {% endfor %}
+  </ul>
+</nav>

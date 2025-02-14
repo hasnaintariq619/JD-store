@@ -28,10 +28,25 @@
 <ul
   {% if nav_style == 'drawer' %}
     class="menu-drawer_navigation"
+  {% else %}
+    class="hidden md:!flex justify-between items-center gap-2 py-1 max-w-[90%] mx-auto my-0"
   {% endif %}
 >
+  <li class="md:hidden">
+    <button
+      @click="drawerOpen = !drawerOpen"
+      :class="{ 'drawer-open': drawerOpen }"
+      class="header-drawer_icons p-3 font-bold text-white text-[13px] !justify-end !w-full"
+    >
+      {{- 'icon-close.svg' | inline_asset_content -}}
+    </button>
+  </li>
   {% for link in section.settings.menu.links %}
-    <li x-data="{ menuOpen: false, activeSubMenu: null }" @click.outside="menuOpen = false; activeSubMenu = null">
+    <li
+      x-data="{ menuOpen: false, activeSubMenu: null }"
+      @click.outside="menuOpen = false; activeSubMenu = null"
+      class="py-3 font-bold text-white text-[13px]"
+    >
       {% if link.links != blank %}
         <button
           @click="menuOpen = !menuOpen"

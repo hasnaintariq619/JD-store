@@ -28,7 +28,6 @@
   {% endif %};
     align-items: center;
     gap: 0 1.5rem;
-    max-width: var(--page-width);
     margin-inline: auto;
     padding: {{ section.settings.padding_top }}px 20px {{ section.settings.padding_bottom }}px;
   }
@@ -143,24 +142,8 @@
   #header-search.active {
     display: flex;
   }
-  {%- if settings.predictive_search_enabled -%}
-    #header-search predictive-search {
-      position: relative;
-      display: flex;
-      width:min(750px, calc(100% - 3.5rem))
-    }
-    #predictive-search-wrapper {
-      position: absolute;
-      top: 100%;
-      left: 0;
-      background: rgb(var(--color-background));
-      border: 1px solid rgba(var(--color-foreground),var(--popup-border-opacity));
-      border-top: 0;
-      width: calc(100% - 2px);
-      max-height: 80vh;
-      overflow-y: auto;
-    }
-  {%- endif -%}
+
+
   #header-search form {
     position: relative;
     border: 1px solid rgb(var(--color-foreground), 0.2);
@@ -198,14 +181,7 @@
     margin: 0;
     margin-right: 15px;
   }
-  #header-search .reset__button::before {
-    content: '';
-    position: absolute;
-    right: -15px;
-    width: 1px;
-    height: calc(100% + 10px);
-    background: rgba(var(--color-foreground),.08);
-  }
+
   #header-search .reset__button svg.icon-close {
     width: 10px !important;
     height: auto;
@@ -226,9 +202,16 @@
   }
   #header-search svg {
     width: 20px;
-    color: rgb(var(--color-foreground));
+    color: black;
   }
 
+  #header-search button.white svg {
+    color: white !important;
+  }
+
+  #header-search button.black svg {
+    color: black !important;
+  }
   @media (min-width: 768px) {
     {% unless section.settings.menu_type_desktop == 'drawer' %}
       #header-drawer {
@@ -263,46 +246,45 @@
   }
 </style>
 
-{% capture header_search %}
-  <div id="header-actions_search" @click="searchOpen = !searchOpen; $nextTick(() => { if (searchOpen) $refs.searchInput.focus() })">
-    {{ 'icon-search.svg' | inline_asset_content }}
-  </div>
-{% endcapture %}
-
 <div class="color-{{ section.settings.color_scheme }} gradient">
+  <div class="hidden max-w-[90%] mx-auto my-0 md:!flex justify-end gap-4 text-white px-2 py-1 text-[13px] items-center">
+    <a href="{{routes.order_tracking_url}}" class="cursor-pointer hover:underline">Order Tracking</a>
+    <a href="{{ routes.contact_url }}" class="cursor-pointer hover:underline">Contact Us</a>
+    <div class="text-white text-[13px]">
+      <a href="#" class="cursor-pointer hover:underline {%  if shop.locale == 'en' %} font-bold {% else %} font-normal {% endif %}">EN</a> /
+      <a href="#" class="cursor-pointer hover:underline {%  if shop.locale == 'fn' %} font-bold {% else %} font-normal {% endif %}">FN</a>
+    </div>
+  </div>
   <header
     id="main-header"
-    x-data="{ searchOpen: false, searchTerm: '' }"
-    @click.outside="searchOpen = false"
+    x-data="{ searchOpen: false, searchTerm: '', searchOpenDesktop: false }"
+    @click.outside="searchOpen = false;"
     @input="searchTerm = $event.target.value"
+    class="!px-0 !py-1 !max-w-[90%] !min-h-[50px] !flex justify-between items-center"
   >
-    {% render 'component-nav-drawer' %}
+    <div class="flex gap-3 md:!hidden">
+      {% render 'component-nav-drawer' %}
+      <div
+        class="md:hidden"
+        id="header-actions_search"
+        @click="searchOpen = !searchOpen; $nextTick(() => { if (searchOpen) $refs.searchInput.focus() })"
+      >
+        {{ 'icon-search.svg' | inline_asset_content }}
+      </div>
+    </div>
 
-    {% if section.settings.logo_position == 'top-center' or section.settings.menu == blank %}
-      {{ header_search }}
-    {% endif %}
+    <div>
+      {% if request.page_type == 'index' %}<h1 style="margin: 0">{% endif %}
+      <a href="{{ routes.root_url }}" class="hidden md:!flex text-white">
+        {% render 'jd-logo' %}
+      </a>
+      <a href="{{ routes.root_url }}" class="flex md:hidden text-white">
+        {% render 'jd-logo-sm' %}
+      </a>
+      {% if request.page_type == 'index' %}</h1>{% endif %}
+    </div>
 
-    {% if request.page_type == 'index' %}<h1 style="margin: 0">{% endif %}
-    <a href="{{ routes.root_url }}" style="display: flex">
-      {% if settings.logo != blank %}
-        {{ settings.logo | image_url: width: 900 | image_tag: class: 'header-logo' }}
-      {% else %}
-        <span class="header-shop_name">{{ shop.name }}</span>
-      {% endif %}
-    </a>
-    {% if request.page_type == 'index' %}</h1>{% endif %}
-
-    {% if section.settings.menu != blank and section.settings.menu_type_desktop != 'drawer' %}
-      <nav>
-        {% if section.settings.menu_type_desktop == 'dropdown' %}
-          {% render 'component-nav-dropdown', nav_style: 'dropdown' %}
-        {% elsif section.settings.menu_type_desktop != 'drawer' %}
-          {% render 'component-nav-megamenu' %}
-        {% endif %}
-      </nav>
-    {% endif %}
-
-    <div class="header-actions">
+    <div class="header-actions items-center !gap-2">
       {% if section.settings.enable_country_selector or section.settings.enable_language_selector %}
         <div class="header-actions_localization">
           {%- render 'component-localization-form',
@@ -312,19 +294,41 @@
         </div>
       {% endif %}
 
-      {% unless section.settings.logo_position == 'top-center' or section.settings.menu == blank %}
-        {{ header_search }}
-      {% endunless %}
-
-      {% if shop.customer_accounts_enabled and section.settings.enable_customer_avatar %}
+      <div @click.outside="searchOpenDesktop = false;">
+        <div class="hidden md:!block relative">
+          {%- render 'component-predictive-search', context: 'header' -%}
+        </div>
         <a
-          class="header-actions_account"
+          class="header-actions_account hidden md:!block"
+          href="{% if customer %}{{ routes.account_url }}{% else %}{{ routes.account_login_url }}{% endif %}"
+          rel="nofollow"
+        >
+          <div class="flex gap-2 items-center justify-center bg-white text-black p-3 font-bold text-[13px]">
+            {% render 'user-icon' %}
+            My Account
+          </div>
+        </a>
+        <a
+          class="block md:!hidden"
           href="{% if customer %}{{ routes.account_url }}{% else %}{{ routes.account_login_url }}{% endif %}"
           rel="nofollow"
         >
           {{ 'icon-account.svg' | inline_asset_content }}
         </a>
-      {% endif %}
+      </div>
+      <a
+        class="hidden md:!block"
+        href="{{ routes.page_favorite_url }}"
+        rel="nofollow"
+      >
+        <div class="hidden md:!flex gap-2 items-center justify-center bg-white text-black p-3 font-bold text-[13px]">
+          {% render 'heart-icon' %}
+          Favorites
+        </div>
+        <div class="md:hidden">
+          {% render 'heart-icon' %}
+        </div>
+      </a>
 
       {%- for block in section.blocks -%}
         {%- case block.type -%}
@@ -341,45 +345,23 @@
           href="{{ routes.cart_url }}"
         {%- endif -%}
       >
-        {{ 'icon-cart.svg' | inline_asset_content }}
-        <div data-cart-count data-ajax-cart-bind="item_count">{{ cart.item_count }}</div>
+        <div class="hidden md:!flex text-black bg-white p-3 items-center font-bold text-[13px] gap-2">
+          {% render 'basket-icon' %}
+          Basket
+        </div>
+        <div class="md:hidden">
+          {% render 'basket-icon' %}
+          <div data-cart-count data-ajax-cart-bind="item_count">{{ cart.item_count }}</div>
+        </div>
       </a>
-    </div>
 
-    <div id="header-search" :class="{ 'active': searchOpen }">
-      {%- if settings.predictive_search_enabled -%}
+      <div id="header-search" :class="{ 'active': searchOpen }" class="z-99">
         {%- render 'component-predictive-search', context: 'header' -%}
-      {%- else -%}
-        <form action="{{ routes.search_url }}" method="get" role="search">
-          <input
-            type="search"
-            name="q"
-            value="{{ search.terms | escape }}"
-            placeholder="Search"
-            x-model="searchTerm"
-            x-ref="searchInput"
-            x-show="searchOpen"
-            @focus="$event.target.select()"
-          >
-          <button
-            type="reset"
-            class="reset__button"
-            aria-label="Clear search term"
-            @click="$refs.searchInput.value = ''; searchTerm = ''; $dispatch('search-input-cleared');"
-            x-show="searchTerm.length > 0"
-            x-transition
-            x-cloak
-          >
-            {{- 'icon-close.svg' | inline_asset_content -}}
-          </button>
-          <button aria-label="Search">
-            {{- 'icon-search.svg' | inline_asset_content -}}
-          </button>
-        </form>
-      {%- endif -%}
-      <button id="close-header-search" @click="searchOpen = !searchOpen">
-        {{- 'icon-close.svg' | inline_asset_content -}}
-      </button>
+
+        <button id="close-header-search" @click="searchOpen = !searchOpen" class="white">
+          {{- 'icon-close.svg' | inline_asset_content -}}
+        </button>
+      </div>
     </div>
   </header>
 
@@ -393,6 +375,16 @@
   {%- if settings.cart_type == 'drawer' -%}
     {%- render 'component-cart-drawer' -%}
   {%- endif -%}
+
+  {% if section.settings.menu != blank and section.settings.menu_type_desktop != 'drawer' %}
+    <nav>
+      {% if section.settings.menu_type_desktop == 'dropdown' %}
+        {% render 'component-nav-dropdown', nav_style: 'dropdown' %}
+      {% elsif section.settings.menu_type_desktop != 'drawer' %}
+        {% render 'component-nav-megamenu' %}
+      {% endif %}
+    </nav>
+  {% endif %}
 </div>
 
 <script>
