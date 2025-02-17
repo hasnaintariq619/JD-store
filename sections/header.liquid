@@ -200,10 +200,6 @@
     cursor: pointer;
     padding: 0;
   }
-  #header-search svg {
-    width: 20px;
-    color: black;
-  }
 
   #header-search button.white svg {
     color: white !important;
@@ -296,7 +292,7 @@
 
       <div @click.outside="searchOpenDesktop = false;">
         <div class="hidden md:!block relative">
-          {%- render 'component-predictive-search', context: 'header' -%}
+          {%- render 'component-predictive-search', context: 'header', isDesktop: true -%}
         </div>
         <a
           class="header-actions_account hidden md:!block"
@@ -355,8 +351,8 @@
         </div>
       </a>
 
-      <div id="header-search" :class="{ 'active': searchOpen }" class="z-99">
-        {%- render 'component-predictive-search', context: 'header' -%}
+      <div id="header-search" :class="{ 'active': searchOpen }" class="z-99 md:hidden">
+        {%- render 'component-predictive-search', context: 'header', isDesktop: false -%}
 
         <button id="close-header-search" @click="searchOpen = !searchOpen" class="white">
           {{- 'icon-close.svg' | inline_asset_content -}}

@@ -1,5 +1,13 @@
 {%- if predictive_search.performed -%}
   <div id="predictive-search-results">
+    <a
+      class="flex justify-between items-center bg-[#f2f2f2] font-bold md:bg-transparent"
+      href="{{ routes.search_url }}?q={{ predictive_search.terms }}"
+    >
+      <span>Top Results for “{{ predictive_search.terms }}”</span>
+
+      <span class="inline underline capitalize font-normal text-[14px]"> View All</span>
+    </a>
     <div id="predictive-results__wrapper">
       {%- if predictive_search.resources.queries.size > 0 or predictive_search.resources.collections.size > 0 -%}
         <div class="predictive-search__suggestions">
@@ -10,7 +18,8 @@
                 <a
                   href="{{ query.url }}"
                   class="predictive-search__item"
-                  tabindex="-1">
+                  tabindex="-1"
+                >
                   {{ query.styled_text }}
                 </a>
               </li>
@@ -20,7 +29,8 @@
                 <a
                   href="{{ collection.url }}"
                   class="predictive-search__item"
-                  tabindex="-1">
+                  tabindex="-1"
+                >
                   {{ collection.title }}
                 </a>
               </li>
@@ -36,7 +46,8 @@
                 <a
                   href="{{ page.url }}"
                   class="predictive-search__item "
-                  tabindex="-1">
+                  tabindex="-1"
+                >
                   {{ page.title | escape }}
                 </a>
               </li>
@@ -46,7 +57,8 @@
                 <a
                   href="{{ article.url }}"
                   class="predictive-search__item"
-                  tabindex="-1">
+                  tabindex="-1"
+                >
                   {{ article.title | escape }}
                 </a>
               </li>
@@ -54,7 +66,7 @@
           </ul>
         </div>
       {%- endif -%}
-  
+
       {%- if predictive_search.resources.products.size > 0 -%}
         <div class="predictive-search__products">
           <h3>Products</h3>
@@ -89,10 +101,5 @@
         </div>
       {%- endif -%}
     </div>
-  
-    <a href="{{ routes.search_url }}?q={{ predictive_search.terms }}">
-      <span>Search for “{{ predictive_search.terms }}”</span>
-      {{- 'icon-arrow.svg' | inline_asset_content -}}
-    </a>
   </div>
 {%- endif -%}

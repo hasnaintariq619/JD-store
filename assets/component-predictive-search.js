@@ -4,6 +4,7 @@ class PredictiveSearch extends HTMLElement {
 
     this.input = this.querySelector('input[type="search"]');
     this.predictiveSearchResults = this.querySelector('#predictive-search');
+
     this.searchTerm = this.input.value.trim();
     this.isOpen = false;
     this.abortController = new AbortController();
@@ -12,7 +13,10 @@ class PredictiveSearch extends HTMLElement {
       this.getSearchResults(this.searchTerm);
     }
 
-    this.input.addEventListener('input', this.debounce(() => this.onChange(), 300));
+    this.input.addEventListener(
+      'input',
+      this.debounce(() => this.onChange(), 300),
+    );
     this.addEventListener('search-input-cleared', () => this.onChange());
   }
 
@@ -37,20 +41,20 @@ class PredictiveSearch extends HTMLElement {
     fetch(`/search/suggest?q=${encodeURIComponent(searchTerm)}&section_id=predictive-results`, {
       signal: this.abortController.signal,
     })
-      .then(response => {
+      .then((response) => {
         if (!response.ok) {
           this.close();
           return Promise.reject(new Error(`Failed to fetch: ${response.status}`));
         }
         return response.text();
       })
-      .then(text => {
+      .then((text) => {
         const parser = new DOMParser();
         const doc = parser.parseFromString(text, 'text/html');
         const resultsMarkup = doc.querySelector('#shopify-section-predictive-results')?.innerHTML || '';
         this.updateResults(resultsMarkup);
       })
-      .catch(error => {
+      .catch((error) => {
         console.error('Error fetching search results:', error);
         this.close();
       });
@@ -85,4 +89,4 @@ class PredictiveSearch extends HTMLElement {
   }
 }
 
-customElements.define('predictive-search', PredictiveSearch);  
+customElements.define('predictive-search', PredictiveSearch);

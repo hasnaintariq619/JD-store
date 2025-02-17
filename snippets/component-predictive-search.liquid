@@ -1,60 +1,101 @@
-<predictive-search>
-  <!-- Desktop Search Form -->
-  <form action="{{ routes.search_url }}" method="get" role="search" class="hidden md:!flex items-center !border-none">
-    <input
-      type="search"
-      name="q"
-      value="{{ search.terms | escape }}"
-      placeholder="Search Cloths, brand, shoes ...."
-      aria-owns="predictive-search-results"
-      aria-controls="predictive-search-results"
-      aria-haspopup="listbox"
-      aria-autocomplete="list"
-      x-model="searchTerm"
-      id="header-actions_search"
-      class="bg-white px-4 h-[40px] text-[13px] p-2 min-w-120 outline-none !text-black"
-      @click="searchOpenDesktop = true;"
-      style="outline-offset:0 !important; box-shadow:none !important;"
-    >
-    <button type="submit" class="bg-[#ffee00] text-black hover:bg-black hover:text-[#ffee00] px-6 py-3 uppercase font-bold text-[13px]">
-      Search
-    </button>
-  </form>
+{% assign top_categories = ''
+  | append: "mens-shoes|Men's Shoes|/collections/mens-shoes,"
+  | append: "mens-clothing-sportswear|Men's Clothing & Sportswear|/collections/mens-clothing-sportswear,"
+  | append: "womens-shoes|Women's Shoes|/collections/womens-shoes,"
+  | append: "womens-clothing-sportswear|Women's Clothing & Sportswear|/collections/womens-clothing-sportswear,"
+  | append: "boys-mens|Boys' & Men's|/collections/boys-mens"
+%}
 
-  <!-- Mobile Search Form -->
-  <form action="{{ routes.search_url }}" method="get" role="search" class="block md:hidden !border-none">
-    <div class="flex items-center justify-center bg-white rounded-full px-4">
-      <button aria-label="Search" class="black">
-        {{- 'icon-search.svg' | inline_asset_content -}}
-      </button>
+{% assign top_categories = top_categories | split: ',' %}
+
+<predictive-search>
+  {% if isDesktop == true %}
+    <form
+      action="{{ routes.search_url }}"
+      method="get"
+      role="search"
+      class="hidden md:!flex items-center !border-none"
+    >
       <input
         type="search"
         name="q"
         value="{{ search.terms | escape }}"
-        placeholder="Search"
+        placeholder="Search Cloths, brand, shoes ...."
         aria-owns="predictive-search-results"
         aria-controls="predictive-search-results"
         aria-haspopup="listbox"
         aria-autocomplete="list"
         x-model="searchTerm"
-        x-ref="searchInput"
-        x-show="searchOpen"
-        @focus="$event.target.select()"
-        class="!text-black px-2 outline-none"
-        style="outline-offset: 0 !important; box-shadow: none !important;"
+        class="bg-white px-4 h-[40px] text-[13px] p-2 min-w-120 outline-none !text-black"
+        @click="searchOpenDesktop = true;"
+        style="outline-offset:0 !important; box-shadow:none !important;"
       >
-      <input name="options[prefix]" type="hidden" value="last">
-      <button class="rounded-full bg-gray-400 p-3 text-sm" aria-label="Search">
-        {% render 'chevron-right-icon' %}
+      <button type="submit" class="bg-[#ffee00] text-black hover:bg-black hover:text-[#ffee00] px-6 py-3 uppercase font-bold text-[13px]">
+        Search
       </button>
-    </div>
-  </form>
+    </form>
+  {% else %}
+    <form action="{{ routes.search_url }}" method="get" role="search" class="block md:!hidden !border-none">
+      <div class="flex items-center justify-center bg-white rounded-full px-4">
+        <button aria-label="Search" class="black">
+          {{- 'icon-search.svg' | inline_asset_content -}}
+        </button>
+        <input
+          type="search"
+          name="q"
+          value="{{ search.terms | escape }}"
+          placeholder="Search Cloths, brand, shoes ...."
+          aria-owns="predictive-search-results"
+          aria-controls="predictive-search-results"
+          aria-haspopup="listbox"
+          aria-autocomplete="list"
+          x-model="searchTerm"
+          x-ref="searchInput"
+          @click="serchOpen = true;"
+          class="!text-black px-2 outline-none"
+          style="outline-offset:0 !important; box-shadow:none !important;"
+        >
+        <input name="options[prefix]" type="hidden" value="last">
+        <button
+          type="submit"
+          class="rounded-full !bg-gray-400 p-3 !w-[30px] !h-[30px] m-2 flex flex-none items-center justify-center !text-black"
+          aria-label="Search"
+        >
+          {% render 'chevron-right-icon' %}
+        </button>
+      </div>
+    </form>
+  {% endif %}
 
   <!-- Predictive Search Results -->
-  <div id="predictive-search-wrapper" tabindex="-1" x-show="searchOpenDesktop || searchOpen">
-    <div class="predictive-search__loading hidden">
-      {{ 'icon-loader.svg' | inline_asset_content }}
+  <div id="predictive-search-wrapper" tabindex="-1" x-show="searchOpenDesktop || searchOpen" class="text-[13px] {{ class }}" x-cloak>
+    <div class="md:bg-[#f2f2f2] border-none md:border-r md:border-r-[#ccc] p-4 md:min-w-[200px]">
+      <label class="block md:inline-block w-full bg-[#f2f2f2] md:bg-transparent p-1 px-2 font-[900] uppercase mb-2">Top Categories</label>
+      <ul class="p-1">
+        {% for categories in top_categories %}
+          {% assign parts = categories | split: '|' %}
+          <li>
+            <a
+              class="block capitalize text-[12px]"
+              href="{{ parts[2] }}"
+              data-autocomplete-collection=""
+              data-handle="{{ parts[0] }}"
+              data-title="{{ parts[1] }}"
+            >
+              {{ parts[1] }}
+            </a>
+          </li>
+        {% endfor %}
+      </ul>
     </div>
-    <div id="predictive-search"></div>
+    <div id="predictive-search" class="p-4 overflow-y-auto">
+      <label class="block md:inline-block w-full bg-[#f2f2f2] md:bg-transparent p-1 px-2 font-[900] uppercase mb-2"
+        >Trending Products</label
+      >
+      <p class="p-2">No trending Products</p>
+      <div class="predictive-search__loading animate-spin hidden">
+        {{ 'icon-loader.svg' | inline_asset_content }}
+      </div>
+    </div>
   </div>
 </predictive-search>

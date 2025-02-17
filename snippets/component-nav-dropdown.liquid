@@ -25,7 +25,97 @@
     }
   </style>
 {% endunless %}
+
+<style>
+  .hover-link {
+    display: inline;
+    border: 0 none !important;
+    background: none !important;
+    color: var(--color-links) !important;
+    padding: 0;
+    margin: 0;
+    text-decoration: none;
+    border-radius: 0px;
+    cursor: pointer;
+    outline: 0;
+    font-size: 12px;
+    letter-spacing: 0.24px;
+    line-height: 1.3em;
+    font-weight: 400;
+  }
+  .hover-link:hover {
+    text-decoration: underline;
+  }
+
+  @media screen and (min-width: 641px) {
+    .menu__item {
+      display: block;
+    }
+    .menu {
+      background: white;
+      box-shadow: 0 5px 7px -2px rgb(0 0 0 / 20%);
+      color: black;
+      left: 0;
+      padding: 30px 12px;
+      position: absolute;
+      top: 100%;
+      width: 100%;
+      min-width: 1000px;
+      z-index: 11;
+    }
+    .menu__block {
+      display: inline-block;
+      vertical-align: top;
+      width: calc(100% / 6);
+      padding: 0 1rem;
+      font-size: 12px;
+      text-align: left;
+    }
+    .menu__header {
+      display: block;
+      border-bottom: 2px solid black;
+      margin-bottom: 1rem;
+    }
+    .menu__header a {
+      font-weight: 700;
+      font-size: 12px;
+      line-height: initial;
+      display: block;
+      padding: 0 1rem 0.7rem 0;
+      text-transform: uppercase;
+      letter-spacing: 0;
+    }
+    .menu__item a {
+      line-height: 18px;
+      font-size: 12px;
+      font-weight: 400;
+      letter-spacing: 0;
+      display: block;
+      padding: 0.4rem 0;
+      letter-spacing: 0;
+    }
+    .menu__carousel-container {
+      width: calc(220px + 3rem);
+      padding-left: 3rem;
+      vertical-align: top;
+      border-left: 1px solid #cccccc;
+    }
+  }
+  @media screen and (min-width: 1025px) {
+    .menu {
+      min-width: 1200px;
+    }
+    .menu__header a {
+      width: max-content;
+      max-width: 150px;
+    }
+    .menu__block {
+      width: calc(100% / 7);
+    }
+  }
+</style>
 <ul
+  x-data="{ activeMenu: null }"
   {% if nav_style == 'drawer' %}
     class="menu-drawer_navigation"
   {% else %}
@@ -38,77 +128,122 @@
       :class="{ 'drawer-open': drawerOpen }"
       class="header-drawer_icons p-3 font-bold text-white text-[13px] !justify-end !w-full"
     >
-      {{- 'icon-close.svg' | inline_asset_content -}}
+      {{ 'icon-close.svg' | inline_asset_content }}
     </button>
   </li>
+
   {% for link in section.settings.menu.links %}
+    {% assign title_lowercase = link.title | downcase %}
+
     <li
-      x-data="{ menuOpen: false, activeSubMenu: null }"
-      @click.outside="menuOpen = false; activeSubMenu = null"
-      class="py-3 font-bold text-white text-[13px]"
+      x-data="{ menuOpen: false }"
+      @mouseenter="menuOpen = true; activeMenu = {{ forloop.index }}"
+      @mouseleave="menuOpen = false; activeMenu = null"
+      class="py-3 font-bold text-white text-[13px] relative"
     >
       {% if link.links != blank %}
         <button
-          @click="menuOpen = !menuOpen"
+          @click="menuOpen = !menuOpen; activeMenu = menuOpen ? {{ forloop.index }} : null"
+          @mouseover="menuOpen = true; activeMenu = {{ forloop.index }}"
+          @mouseleave="menuOpen = false"
           :class="{ 'menu-open': menuOpen }"
-          class="menu-toggle"
+          class="menu-toggle pointer-cursor {% if title_lowercase contains 'sale' %} text-red-500 {% endif %}"
         >
-          {{- link.title | escape -}}
-          {{- 'icon-caret.svg' | inline_asset_content -}}
+          {{ link.title | escape }}
+          {% unless nav_style == 'dropdown' %}
+            {{ 'icon-caret.svg' | inline_asset_content }}
+          {% endunless %}
         </button>
-        <ul
-          x-show="menuOpen"
-          class="nav-{{ nav_style }} color-{{ section.settings.menu_color_scheme }} gradient"
+
+        <div
+          x-show="activeMenu === {{ forloop.index }}"
           x-transition
+          class="nav-{{ nav_style }} menu"
           role="list"
           x-cloak
         >
-          {%- for childlink in link.links -%}
-            <li>
-              {% if childlink.links == blank %}
-                <a
-                  href="{{ childlink.url }}"
-                  class="header__menu-item"
-                  {% if childlink.current %}
-                    aria-current="page"
-                  {% endif %}
-                >
-                  {{ childlink.title | escape }}
-                </a>
+          <div class="flex max-w-[1200px] mx-0 my-auto justify-center gap-4">
+            {% for sub_link in link.links %}
+              {% assign base_slug = sub_link.title | downcase | replace: ' ', '-' %}
+              {% if title_lowercase contains 'arrivals' or title_lowercase contains 'brands' %}
+                <div class="w-full text-center mx-auto my-0">
+                  <a class="hover-link text-center" href="{{ sub_link.url }}">
+                    <div>
+                      {{ 'product-' | append: forloop.index | placeholder_svg_tag: 'w-full h-[220px] border object-cover' }}
+                    </div>
+                    <label class="block text-center !font-bold uppercase mt-3">{{ sub_link.title }}</label>
+                  </a>
+                </div>
               {% else %}
-                <button
-                  @click="activeSubMenu = (activeSubMenu === '{{ childlink.title | escape }}' ? null : '{{ childlink.title | escape }}')"
-                  :class="{ 'menu-open': activeSubMenu === '{{ childlink.title | escape }}' }"
-                  class="menu-toggle"
-                >
-                  {{- childlink.title | escape -}}
-                  {{- 'icon-caret.svg' | inline_asset_content -}}
-                </button>
-                <ul
-                  x-show="activeSubMenu === '{{ childlink.title | escape }}'"
-                  class="nav-dropdown_child"
-                  x-transition
-                  role="list"
-                  x-cloak
-                >
-                  {%- for grandchildlink in childlink.links -%}
-                    <li>
-                      <a
-                        href="{{ grandchildlink.url }}"
-                        class="header__menu-item"
-                        {% if grandchildlink.current %}
-                          aria-current="page"
-                        {% endif %}
-                      >
-                        {{ grandchildlink.title | escape }}
-                      </a>
-                    </li>
-                  {%- endfor -%}
+                <ul class="menu__block" role="menu">
+                  <lh class="menu__header" role="menuitem">
+                    <a class="hover-link" href="{{ sub_link.url }}">
+                      <span>{{ sub_link.title }}</span>
+                    </a>
+                  </lh>
+
+                  <li class="menu__item">
+                    <a class="hover-link" href="/collections/{{ base_slug }}/shoes">
+                      <span>Shoes</span>
+                    </a>
+                  </li>
+                  <li class="menu__item">
+                    <a class="hover-link" href="/collections/{{ base_slug }}/lifestyle-shoes">
+                      <span>Lifestyle Shoes</span>
+                    </a>
+                  </li>
+                  <li class="menu__item">
+                    <a class="hover-link" href="/collections/{{ base_slug }}/clothing">
+                      <span>Clothing</span>
+                    </a>
+                  </li>
+                  <li class="menu__item">
+                    <a class="hover-link" href="/collections/{{ base_slug }}/hoodies-sweatshirts">
+                      <span>Hoodies &amp; Sweatshirts</span>
+                    </a>
+                  </li>
+                  <li class="menu__item">
+                    <a class="hover-link" href="/collections/{{ base_slug }}/t-shirts-shirts-tanks">
+                      <span>T-Shirts, Shirts &amp; Tanks</span>
+                    </a>
+                  </li>
+                  <li class="menu__item">
+                    <a class="hover-link" href="/collections/{{ base_slug }}/bottoms">
+                      <span>Bottoms</span>
+                    </a>
+                  </li>
+                  <li class="menu__item">
+                    <a class="hover-link" href="/collections/{{ base_slug }}/jackets-coats-vests">
+                      <span>Jackets, Coats &amp; Vests</span>
+                    </a>
+                  </li>
+                  <li class="menu__item">
+                    <a class="hover-link" href="/collections/{{ base_slug }}/accessories">
+                      <span>Accessories</span>
+                    </a>
+                  </li>
+                  <li class="menu__item">
+                    <a class="hover-link" href="/collections/{{ base_slug }}/last-chance">
+                      <span>Last Chance</span>
+                    </a>
+                  </li>
+                  <li class="menu__item">
+                    <a class="hover-link" href="/collections/{{ base_slug }}">
+                      <span>Shop All</span>
+                    </a>
+                  </li>
                 </ul>
               {% endif %}
-            </li>
-          {%- endfor -%}
-        </ul>
+            {% endfor %}
+
+            {% unless title_lowercase contains 'arrivals' or title_lowercase contains 'brands' %}
+              <div class="menu__carousel-container hidden lg:!block">
+                {{ 'product-' | append: forloop.index | placeholder_svg_tag: 'h-[240px] w-[220px] border object-cover' }}
+                <span class="uppercase font-bold underline color-black mt-2"> Show now</span>
+              </div>
+            {% endunless %}
+          </div>
+        </div>
       {% else %}
         <a
           href="{{ link.url }}"
@@ -116,7 +251,7 @@
             aria-current="page"
           {% endif %}
         >
-          {{- link.title | escape -}}
+          {{ link.title | escape }}
         </a>
       {% endif %}
     </li>
