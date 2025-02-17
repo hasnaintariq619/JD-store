@@ -299,9 +299,9 @@
           href="{% if customer %}{{ routes.account_url }}{% else %}{{ routes.account_login_url }}{% endif %}"
           rel="nofollow"
         >
-          <div class="flex gap-2 items-center justify-center bg-white text-black p-3 font-bold text-[13px]">
+          <div class="flex gap-2 items-center justify-center bg-white text-black p-3 font-bold text-[13px] h-[40px]">
             {% render 'user-icon' %}
-            My Account
+            <span class="hidden lg:!block">My Account</span>
           </div>
         </a>
         <a
@@ -317,9 +317,9 @@
         href="{{ routes.page_favorite_url }}"
         rel="nofollow"
       >
-        <div class="hidden md:!flex gap-2 items-center justify-center bg-white text-black p-3 font-bold text-[13px]">
+        <div class="hidden md:!flex gap-2 items-center justify-center bg-white text-black p-3 font-bold text-[13px] h-[40px]">
           {% render 'heart-icon' %}
-          Favorites
+          <span class="hidden lg:!block">Favorites</span>
         </div>
         <div class="md:hidden">
           {% render 'heart-icon' %}
@@ -341,9 +341,9 @@
           href="{{ routes.cart_url }}"
         {%- endif -%}
       >
-        <div class="hidden md:!flex text-black bg-white p-3 items-center font-bold text-[13px] gap-2">
+        <div class="hidden md:!flex text-black bg-white p-3 items-center font-bold text-[13px] gap-2 h-[40px]">
           {% render 'basket-icon' %}
-          Basket
+          <span class="hidden lg:!block">Basket</span>
         </div>
         <div class="md:hidden">
           {% render 'basket-icon' %}
@@ -372,15 +372,9 @@
     {%- render 'component-cart-drawer' -%}
   {%- endif -%}
 
-  {% if section.settings.menu != blank and section.settings.menu_type_desktop != 'drawer' %}
-    <nav>
-      {% if section.settings.menu_type_desktop == 'dropdown' %}
-        {% render 'component-nav-dropdown', nav_style: 'dropdown' %}
-      {% elsif section.settings.menu_type_desktop != 'drawer' %}
-        {% render 'component-nav-megamenu' %}
-      {% endif %}
-    </nav>
-  {% endif %}
+  <nav>
+    {% render 'component-nav-dropdown', nav_style: 'dropdown' %}
+  </nav>
 </div>
 
 <script>

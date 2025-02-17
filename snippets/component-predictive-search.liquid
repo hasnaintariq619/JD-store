@@ -14,7 +14,7 @@
       action="{{ routes.search_url }}"
       method="get"
       role="search"
-      class="hidden md:!flex items-center !border-none"
+      class="h-full hidden md:!flex items-center !border-none"
     >
       <input
         type="search"
@@ -30,14 +30,17 @@
         @click="searchOpenDesktop = true;"
         style="outline-offset:0 !important; box-shadow:none !important;"
       >
-      <button type="submit" class="bg-[#ffee00] text-black hover:bg-black hover:text-[#ffee00] px-6 py-3 uppercase font-bold text-[13px]">
+      <button
+        type="submit"
+        class="h-full bg-[#ffee00] text-black hover:bg-black hover:text-[#ffee00] px-6 py-3 uppercase font-bold text-[13px]"
+      >
         Search
       </button>
     </form>
   {% else %}
-    <form action="{{ routes.search_url }}" method="get" role="search" class="block md:!hidden !border-none">
+    <form action="{{ routes.search_url }}" method="get" role="search" class="h-full block md:!hidden !border-none">
       <div class="flex items-center justify-center bg-white rounded-full px-4">
-        <button aria-label="Search" class="black">
+        <button aria-label="Search" class="text-black h-full">
           {{- 'icon-search.svg' | inline_asset_content -}}
         </button>
         <input
@@ -52,13 +55,13 @@
           x-model="searchTerm"
           x-ref="searchInput"
           @click="serchOpen = true;"
-          class="!text-black px-2 outline-none"
+          class="!text-black h-full px-2 outline-none"
           style="outline-offset:0 !important; box-shadow:none !important;"
         >
         <input name="options[prefix]" type="hidden" value="last">
         <button
           type="submit"
-          class="rounded-full !bg-gray-400 p-3 !w-[30px] !h-[30px] m-2 flex flex-none items-center justify-center !text-black"
+          class="rounded-full h-full !bg-gray-400 p-3 !w-[30px] !h-[30px] m-2 flex flex-none items-center justify-center !text-black"
           aria-label="Search"
         >
           {% render 'chevron-right-icon' %}
@@ -69,32 +72,19 @@
 
   <!-- Predictive Search Results -->
   <div id="predictive-search-wrapper" tabindex="-1" x-show="searchOpenDesktop || searchOpen" class="text-[13px] {{ class }}" x-cloak>
-    <div class="md:bg-[#f2f2f2] border-none md:border-r md:border-r-[#ccc] p-4 md:min-w-[200px]">
-      <label class="block md:inline-block w-full bg-[#f2f2f2] md:bg-transparent p-1 px-2 font-[900] uppercase mb-2">Top Categories</label>
-      <ul class="p-1">
-        {% for categories in top_categories %}
-          {% assign parts = categories | split: '|' %}
-          <li>
-            <a
-              class="block capitalize text-[12px]"
-              href="{{ parts[2] }}"
-              data-autocomplete-collection=""
-              data-handle="{{ parts[0] }}"
-              data-title="{{ parts[1] }}"
-            >
-              {{ parts[1] }}
-            </a>
-          </li>
-        {% endfor %}
-      </ul>
-    </div>
-    <div id="predictive-search" class="p-4 overflow-y-auto">
-      <label class="block md:inline-block w-full bg-[#f2f2f2] md:bg-transparent p-1 px-2 font-[900] uppercase mb-2"
-        >Trending Products</label
-      >
-      <p class="p-2">No trending Products</p>
-      <div class="predictive-search__loading animate-spin hidden">
-        {{ 'icon-loader.svg' | inline_asset_content }}
+    <div id="predictive-search">
+      <div class="md:bg-[#f2f2f2] border-none md:border-r md:border-r-[#ccc] p-4 md:min-w-[200px]">
+        <label class="block md:inline-block w-full bg-[#f2f2f2] md:bg-transparent p-1 px-2 font-[900] uppercase mb-2">Top Categories</label>
+        <p class="p-2">No categories found</p>
+      </div>
+      <div class="p-4">
+        <label class="block md:inline-block w-full bg-[#f2f2f2] md:bg-transparent p-1 px-2 font-[900] uppercase mb-2"
+          >Trending Products</label
+        >
+        <p class="p-2">No trending Products</p>
+        <div class="predictive-search__loading animate-spin hidden">
+          {{ 'icon-loader.svg' | inline_asset_content }}
+        </div>
       </div>
     </div>
   </div>

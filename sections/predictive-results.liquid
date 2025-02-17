@@ -1,24 +1,25 @@
 {%- if predictive_search.performed -%}
-  <div id="predictive-search-results">
-    <a
-      class="flex justify-between items-center bg-[#f2f2f2] font-bold md:bg-transparent"
-      href="{{ routes.search_url }}?q={{ predictive_search.terms }}"
-    >
-      <span>Top Results for “{{ predictive_search.terms }}”</span>
-
-      <span class="inline underline capitalize font-normal text-[14px]"> View All</span>
-    </a>
-    <div id="predictive-results__wrapper">
+  <div id="predictive-search-results" class="h-full">
+    <div id="predictive-results__wrapper" class="h-full overflow-y-auto md:overflow-hidden">
       {%- if predictive_search.resources.queries.size > 0 or predictive_search.resources.collections.size > 0 -%}
         <div class="predictive-search__suggestions">
-          <h3>Suggestions</h3>
-          <ul role="listbox" aria-labelledby="predictive-search-suggestions">
+          <label class="flex md:inline-block w-full bg-[#f2f2f2] md:bg-transparent p-1 px-2 font-[900] uppercase mb-2">
+            <span>Top Category Results for </span>
+            <a
+              class="flex justify-between items-center bg-[#f2f2f2] font-bold md:bg-transparent underline"
+              href="{{ routes.search_url }}?q={{ predictive_search.terms }}"
+            >
+              "{{ predictive_search.terms }}"
+            </a>
+          </label>
+          <ul role="listbox" aria-labelledby="predictive-search-suggestions" class="p-1">
             {%- for query in predictive_search.resources.queries -%}
               <li role="option">
                 <a
                   href="{{ query.url }}"
-                  class="predictive-search__item"
+                  class=""
                   tabindex="-1"
+                  class="!capitalize !text-[12px] hover-link"
                 >
                   {{ query.styled_text }}
                 </a>
@@ -28,8 +29,10 @@
               <li role="option">
                 <a
                   href="{{ collection.url }}"
-                  class="predictive-search__item"
+                  class="block capitalize text-[12px]"
                   tabindex="-1"
+                  data-collection-id="{{ collection.id }}"
+                  data-collection-title="{{ collection.title }}"
                 >
                   {{ collection.title }}
                 </a>
@@ -65,13 +68,21 @@
             {%- endfor -%}
           </ul>
         </div>
+      {% else %}
+        <div class="md:bg-[#f2f2f2] border-none md:border-r md:border-r-[#ccc] md:min-w-[240px]" style="padding: 2rem 1rem;">
+          <label class="block md:inline-block w-full bg-[#f2f2f2] md:bg-transparent p-2 font-[900] uppercase mb-2">Top Categories</label>
+          <p class="p-2">No categories found</p>
+        </div>
       {%- endif -%}
 
       {%- if predictive_search.resources.products.size > 0 -%}
         <div class="predictive-search__products">
-          <h3>Products</h3>
+          <label class="flex items-center justify-between w-full bg-[#f2f2f2] md:bg-transparent p-1 px-2 font-[900] uppercase mb-2"
+            ><span>Top Results for “{{ predictive_search.terms }}”</span>
+            <a href="{{ routes.search_url }}?q={{ predictive_search.terms }}" class="!block !underline font-normal !p-0">View All</a>
+          </label>
           <ul role="listbox" aria-labelledby="predictive-search-products">
-            {%- for product in predictive_search.resources.products -%}
+            {%- for product in predictive_search.resources.products limit: 6 -%}
               <li role="option">
                 <a href="{{ product.url }}">
                   {%- if product.featured_media != blank -%}
@@ -91,13 +102,35 @@
                     {%- endif -%}
                     <p class="predictive-search__item-heading">{{ product.title | escape }}</p>
                     {%- if settings.predictive_search_show_price -%}
-                      {% render 'component-product-price', product: product, use_variant: true, show_badges: false %}
+                      {% render 'component-product-price',
+                        product: product,
+                        use_variant: true,
+                        show_badges: false,
+                        show_compare_at_price: false
+                      %}
+                    {%- endif -%}
+                    {%- if product.reviews_count > 0 -%}
+                      <div class="flex items-center justify-start">
+                        <span class="flex items-center justify-start mr-2">
+                          {% for star in (1..5) %}
+                            {% render 'star-icon' %}
+                          {% endfor %}
+                        </span>
+                        <small class="text-[12px] font-medium">({{ product.reviews_count }})</small>
+                      </div>
                     {%- endif -%}
                   </div>
                 </a>
               </li>
             {%- endfor -%}
           </ul>
+        </div>
+      {% else %}
+        <div style="padding: 2rem 1rem">
+          <label class="block md:inline-block w-full bg-[#f2f2f2] md:bg-transparent px-2 font-[900] uppercase mb-2"
+            >Trending Products</label
+          >
+          <p class="p-2">No trending Products</p>
         </div>
       {%- endif -%}
     </div>

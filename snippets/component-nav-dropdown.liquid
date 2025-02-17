@@ -1,31 +1,3 @@
-{% unless nav_style == 'drawer' %}
-  <style>
-    #main-header .nav-dropdown,
-    #main-header .nav-dropdown_child {
-      position: absolute;
-      top: 100%;
-      gap: 0;
-      align-items: stretch;
-      flex-direction: column;
-      margin-top: 1px;
-      overflow: hidden;
-    }
-    #main-header .nav-dropdown_child {
-      position: static;
-    }
-    #main-header .nav-dropdown a,
-    #main-header .nav-dropdown .menu-toggle {
-      display: flex;
-      min-width: 20ch;
-      width: 100%;
-      font-size: 15px;
-      line-height: 1.5;
-      padding: 12px 18px;
-      border-bottom: 1px solid rgb(var(--color-foreground), 0.2);
-    }
-  </style>
-{% endunless %}
-
 <style>
   .hover-link {
     display: inline;
@@ -60,7 +32,7 @@
       position: absolute;
       top: 100%;
       width: 100%;
-      min-width: 1000px;
+      min-width: 600px;
       z-index: 11;
     }
     .menu__block {
@@ -116,22 +88,8 @@
 </style>
 <ul
   x-data="{ activeMenu: null }"
-  {% if nav_style == 'drawer' %}
-    class="menu-drawer_navigation"
-  {% else %}
-    class="hidden md:!flex justify-between items-center gap-2 py-1 max-w-[90%] mx-auto my-0"
-  {% endif %}
+  class="hidden md:!flex justify-between items-center gap-2 py-1 max-w-[90%] mx-auto my-0 relative"
 >
-  <li class="md:hidden">
-    <button
-      @click="drawerOpen = !drawerOpen"
-      :class="{ 'drawer-open': drawerOpen }"
-      class="header-drawer_icons p-3 font-bold text-white text-[13px] !justify-end !w-full"
-    >
-      {{ 'icon-close.svg' | inline_asset_content }}
-    </button>
-  </li>
-
   {% for link in section.settings.menu.links %}
     {% assign title_lowercase = link.title | downcase %}
 
@@ -139,7 +97,7 @@
       x-data="{ menuOpen: false }"
       @mouseenter="menuOpen = true; activeMenu = {{ forloop.index }}"
       @mouseleave="menuOpen = false; activeMenu = null"
-      class="py-3 font-bold text-white text-[13px] relative"
+      class="py-3 font-bold text-white text-[13px]"
     >
       {% if link.links != blank %}
         <button
@@ -150,9 +108,6 @@
           class="menu-toggle pointer-cursor {% if title_lowercase contains 'sale' %} text-red-500 {% endif %}"
         >
           {{ link.title | escape }}
-          {% unless nav_style == 'dropdown' %}
-            {{ 'icon-caret.svg' | inline_asset_content }}
-          {% endunless %}
         </button>
 
         <div
@@ -162,14 +117,14 @@
           role="list"
           x-cloak
         >
-          <div class="flex max-w-[1200px] mx-0 my-auto justify-center gap-4">
+          <div class="flex mx-0 my-auto w-full mx-0 my-auto justify-center gap-4">
             {% for sub_link in link.links %}
               {% assign base_slug = sub_link.title | downcase | replace: ' ', '-' %}
               {% if title_lowercase contains 'arrivals' or title_lowercase contains 'brands' %}
                 <div class="w-full text-center mx-auto my-0">
                   <a class="hover-link text-center" href="{{ sub_link.url }}">
                     <div>
-                      {{ 'product-' | append: forloop.index | placeholder_svg_tag: 'w-full h-[220px] border object-cover' }}
+                      {{ 'product-' | append: forloop.index | placeholder_svg_tag: 'w-full md:h-[120px] lg:h-[220px] border object-cover' }}
                     </div>
                     <label class="block text-center !font-bold uppercase mt-3">{{ sub_link.title }}</label>
                   </a>

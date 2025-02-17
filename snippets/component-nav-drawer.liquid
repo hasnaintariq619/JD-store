@@ -29,6 +29,7 @@
     list-style: none;
     margin: 0;
     padding: 0;
+    color: white;
   }
   #menu-drawer li {
     width: 100%;
@@ -75,6 +76,7 @@
     border: 1px solid rgb(var(--color-foreground), 0.2);
   }
 </style>
+
 <div
   id="header-drawer"
   x-data="{ drawerOpen: false }"
@@ -88,21 +90,71 @@
     {{- 'icon-menu.svg' | inline_asset_content -}}
   </button>
   <div
+    x-data="{ currentMenu: 'main' }"
     id="menu-drawer"
     class="color-{{ section.settings.menu_color_scheme }} gradient text-white"
     :class="{ 'drawer-open': drawerOpen }"
   >
-    {% render 'component-nav-dropdown', nav_style: 'drawer' %}
+    <!-- Main Menu -->
+    <ul class="nav-dropdown" x-show="currentMenu === 'main'" x-transition>
+      <li class="px-2">
+        <button
+          @click="drawerOpen = !drawerOpen"
+          :class="{ 'drawer-open': drawerOpen }"
+          class="px-[18px] py-[12px] font-bold text-white text-[13px] flex justify-end !w-full"
+        >
+          {{ 'icon-close.svg' | inline_asset_content }}
+        </button>
+      </li>
 
-    <div class="menu-drawer_action">
-      {% if section.settings.enable_country_selector or section.settings.enable_language_selector %}
-        <div class="menu-drawer_localization">
-          {%- render 'component-localization-form',
-            enable_country_selector: section.settings.enable_country_selector,
-            enable_language_selector: section.settings.enable_language_selector
-          -%}
-        </div>
+      {% for item in section.settings.menu.links %}
+        <li class="nav-dropdown">
+          {% if item.links != blank %}
+            <a
+              href="javascript:void(0);"
+              @click="currentMenu = 'submenu-{{ forloop.index }}'"
+              class="menu-link flex items-center justify-between"
+            >
+              {{- item.title }}
+              <div class="h-8 w-8 transform -rotate-85">
+                {{ 'icon-caret.svg' | inline_asset_content }}
+              </div>
+            </a>
+          {% else %}
+            <a href="{{ item.url }}">{{ item.title }}</a>
+          {% endif %}
+        </li>
+      {% endfor %}
+    </ul>
+
+    <!-- Submenus -->
+    {% for item in section.settings.menu.links %}
+      {% if item.links != blank %}
+        <ul x-show="currentMenu === 'submenu-{{ forloop.index }}'" class="nav-dropdown" x-transition>
+          <li class="!grid !grid-cols-3 items-center p-2 mb-2">
+            <button class="px-2 flex items-center justify-start text-[12px]" @click="currentMenu = 'main'">
+              <div class="h-6 w-6 text-[12px] transform rotate-85 text-white">
+                {{ 'icon-caret.svg' | inline_asset_content }}
+              </div>
+              <span class="uppercase text-[12px] pl-2"> Back </span>
+            </button>
+
+            <div class="font-bold text-[1.5em] text-center text-[18px]">{{ item.title }}</div>
+            <button
+              @click="drawerOpen = !drawerOpen"
+              :class="{ 'drawer-open': drawerOpen }"
+              class="flex justify-end items-center text-white text-[12px] w-full"
+            >
+              {{ 'icon-close.svg' | inline_asset_content }}
+            </button>
+          </li>
+          {% for subitem in item.links %}
+            <li class="nav-dropdown">
+              <a href="{{ subitem.url }}">{{ subitem.title }}</a>
+            </li>
+          {% endfor %}
+        </ul>
       {% endif %}
-    </div>
+    {% endfor %}
   </div>
 </div>
